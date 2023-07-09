@@ -9,12 +9,12 @@ import jakarta.persistence.Id;
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
     private String author_name;
     private String author_email;
     private String author_bio;
     
-    public Author(long id, String author_name, String author_email, String author_bio) {
+    public Author(int id, String author_name, String author_email, String author_bio) {
         this.id = id;
         this.author_name = author_name;
         this.author_email = author_email;
@@ -24,11 +24,11 @@ public class Author {
     public Author() {
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
