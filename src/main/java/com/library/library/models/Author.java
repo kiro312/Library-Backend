@@ -32,27 +32,27 @@ public class Author {
         this.id = id;
     }
 
-    public String getAuthor_name() {
+    public String getAuthorName() {
         return author_name;
     }
 
-    public void setAuthor_name(String author_name) {
+    public void setAuthorName(String author_name) {
         this.author_name = author_name;
     }
 
-    public String getAuthor_email() {
+    public String getAuthorEmail() {
         return author_email;
     }
 
-    public void setAuthor_email(String author_email) {
+    public void setAuthorEmail(String author_email) {
         this.author_email = author_email;
     }
 
-    public String getAuthor_bio() {
+    public String getAuthorBio() {
         return author_bio;
     }
 
-    public void setAuthor_bio(String author_bio) {
+    public void setAuthorBio(String author_bio) {
         this.author_bio = author_bio;
     }
 
