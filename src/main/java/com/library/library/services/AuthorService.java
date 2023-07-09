@@ -81,6 +81,7 @@ public class AuthorService {
             author.setAuthorName(request_body.get("author_name").toString());
             author.setAuthorEmail(request_body.get("author_email").toString());
             author.setAuthorBio(request_body.get("author_bio").toString());
+            // 2.1 - save author
             author_repository.save(author);
             // 3 - return response
             return ResponseEntity.ok().body(new ApiResponseModel("Author Updated Successfully", true, author));
@@ -110,5 +111,9 @@ public class AuthorService {
             return false;
         }
         return true;
+    }
+
+    public Author geAuthor(Integer id) {
+        return author_repository.findById(id).orElse(null);
     }
 }
