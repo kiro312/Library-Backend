@@ -1,8 +1,5 @@
 package com.library.library.models;
 
-import org.springframework.stereotype.Service;
-
-@Service
 public class ApiResponseModel {
     private String message;
     private boolean status;
