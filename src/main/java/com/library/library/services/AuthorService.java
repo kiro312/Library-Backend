@@ -23,7 +23,7 @@ public class AuthorService {
     public ResponseEntity<ApiResponseModel> getAllAuthors() {
         try {
             List<Author> authors = author_repository.findAll();
-            return ResponseEntity.ok().body(new ApiResponseModel("Success", true, authors));
+            return ResponseEntity.ok().body(new ApiResponseModel("getting all authors successfully", true, authors));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
         }
@@ -35,7 +35,7 @@ public class AuthorService {
             if (author == null) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return ResponseEntity.ok().body(new ApiResponseModel("Success", true, author));
+            return ResponseEntity.ok().body(new ApiResponseModel("getting author successfully", true, author));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
         }
@@ -57,6 +57,29 @@ public class AuthorService {
             return new ResponseEntity<>(
                     new ApiResponseModel("Author Created Successfully", true, author),
                     HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
+        }
+    }
+
+    public ResponseEntity<ApiResponseModel> updateAuthor(Integer id, Map<String, Object> request_body) {
+        try {
+            // 0 - check if author exists
+            if (!author_repository.existsById(id)) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            // 1 - validate request body
+            if (!validateRequestBody(request_body)) {
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Validation Error", false, null));
+            }
+            // 2 - update author
+            Author author = author_repository.findById(id).orElse(null);
+            author.setAuthorName(request_body.get("author_name").toString());
+            author.setAuthorEmail(request_body.get("author_email").toString());
+            author.setAuthorBio(request_body.get("author_bio").toString());
+            author_repository.save(author);
+            // 3 - return response
+            return ResponseEntity.ok().body(new ApiResponseModel("Author Updated Successfully", true, author));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
         }
