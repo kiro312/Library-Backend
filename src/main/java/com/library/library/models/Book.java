@@ -12,20 +12,20 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String title;
-    private String description;
-    private String image;
+    private String book_title;
+    private String book_description;
+    private String book_image;
     
     @ManyToOne(targetEntity = Author.class, optional = false)
     @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
-    private Author author;
+    private Author book_author;
 
     public Book(int id, String title, String description, String image, Author author) {
         this.id = id;
-        this.title = title;
-        this.description = description;
-        this.image = image;
-        this.author = author;
+        this.book_title = title;
+        this.book_description = description;
+        this.book_image = image;
+        this.book_author = author;
     }
 
     public Book() {
@@ -39,36 +39,36 @@ public class Book {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getBookTitle() {
+        return book_title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setBookTitle(String title) {
+        this.book_title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getBookDescription() {
+        return book_description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBookDescription(String description) {
+        this.book_description = description;
     }
 
-    public String getImage() {
-        return image;
+    public String getBookImage() {
+        return book_image;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setBookImage(String image) {
+        this.book_image = image;
     }
 
-    public Author getAuthor() {
-        return author;
+    public Author getBookAuthor() {
+        return book_author;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setBookAuthor(Author author) {
+        this.book_author = author;
     }
 
 
