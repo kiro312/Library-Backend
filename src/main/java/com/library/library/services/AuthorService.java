@@ -23,6 +23,10 @@ public class AuthorService {
     public ResponseEntity<ApiResponseModel> getAllAuthors() {
         try {
             List<Author> authors = author_repository.findAll();
+            // check if authors is empty
+            if (authors.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
             return ResponseEntity.ok().body(new ApiResponseModel("getting all authors successfully", true, authors));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
