@@ -1,10 +1,14 @@
 package com.library.library.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.library.library.models.ApiResponseModel;
+import com.library.library.models.Author;
 import com.library.library.repositories.AuthorRepository;
 
 @Service
@@ -12,19 +16,24 @@ public class AuthorService {
     @Autowired
     private AuthorRepository author_repository;
 
-    @Autowired
-    private ApiResponseModel api_response_model;
-
     public ResponseEntity<ApiResponseModel> getAllAuthors() {
         try {
-            api_response_model.setMessage("Success");
-            api_response_model.setStatus(true);
-            api_response_model.setData(author_repository.findAll());
-            return ResponseEntity.ok().body(api_response_model);
+            List<Author> authors = author_repository.findAll();
+            return ResponseEntity.ok().body(new ApiResponseModel("Success", true, authors));
         } catch (Exception e) {
-            api_response_model.setMessage("Error " + e.getMessage());
-            api_response_model.setStatus(false);
-            return ResponseEntity.badRequest().body(api_response_model);
+            return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
+        }
+    }
+
+    public ResponseEntity<ApiResponseModel> getAuthorById(Integer id) {
+        try {
+            Author author = author_repository.findById(id).orElse(null);
+            if (author == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return ResponseEntity.ok().body(new ApiResponseModel("Success", true, author));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
         }
     }
 }
