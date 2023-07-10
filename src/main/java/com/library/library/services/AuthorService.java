@@ -107,9 +107,9 @@ public class AuthorService {
             return false;
         }
         // validate email
-        if (!pattern.matcher(request_body.get("author_email").toString()).matches()) {
-            return false;
-        }
+        // if (!pattern.matcher(request_body.get("author_email").toString()).matches()) {
+        //     return false;
+        // }
         return true;
     }
 
