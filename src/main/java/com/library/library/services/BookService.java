@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +24,9 @@ public class BookService {
         try {
             List<Book> books = book_repository.findAll();
             // check if books is empty
-            if (books.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return ResponseEntity.ok().body(new ApiResponseModel("getting all books successfully", true, books));
+            String message = books.isEmpty() ? "No Data Found" : "getting all books successfully";
+
+            return ResponseEntity.ok().body(new ApiResponseModel(message, true, books));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponseModel("Error getting books: " + e.getMessage(), false, null));
@@ -39,7 +37,7 @@ public class BookService {
         try {
             Book book = book_repository.findById(id).orElse(null);
             if (book == null) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Book Not Found", false, null));
             }
             return ResponseEntity.ok().body(new ApiResponseModel("getting book successfully", true, book));
         } catch (Exception e) {
@@ -77,7 +75,7 @@ public class BookService {
             // 0 - check if book exists
             Book book = book_repository.findById(id).orElse(null);
             if (book == null) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Book Not Found", false, null));
             }
             // 1 - validate request body
             if (!validateRequestBody(request_body)) {
@@ -131,6 +129,57 @@ public class BookService {
         }
         // 6 - return true if all checks passed
         return true;
+    }
+
+    public ResponseEntity<ApiResponseModel> patchBook(Integer id, Map<String, Object> request_body) {
+        try {
+            // 0 - check if book exists
+            Book book = book_repository.findById(id).orElse(null);
+            if (book == null) {
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Book Not Found", false, null));
+            }
+            // 1 - validate request body
+            if (!validateRequestBody(request_body)) {
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Validation Error", false, null));
+            }
+            // 2 - update book
+            if (request_body.containsKey("book_title")) {
+                book.setBookTitle(request_body.get("book_title").toString());
+            }
+            if (request_body.containsKey("book_description")) {
+                book.setBookDescription(request_body.get("book_description").toString());
+            }
+            if (request_body.containsKey("book_image")) {
+                book.setBookImage(request_body.get("book_image").toString());
+            }
+            if (request_body.containsKey("author_id")) {
+                Author author = author_service.geAuthor(Integer.parseInt(request_body.get("author_id").toString()));
+                book.setBookAuthor(author);
+            }
+            // 2.1 - save book
+            book_repository.save(book);
+            // 3 - return response
+            return ResponseEntity.ok().body(new ApiResponseModel("book updated successfully", true, book));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponseModel("Error updating book: " + e.getMessage(), false, null));
+        }
+    }
+
+    public ResponseEntity<ApiResponseModel> deleteBook(Integer id) {
+        try {
+            // 0 - check if book exists
+            if (!book_repository.existsById(id)) {
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Book Not Found", false, null));
+            }
+            // 1 - delete book
+            book_repository.deleteById(id);
+            // 2 - return response
+            return ResponseEntity.ok().body(new ApiResponseModel("book deleted successfully", true, null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponseModel("Error deleting book: " + e.getMessage(), false, null));
+        }
     }
 
 }

@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,5 +41,15 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseModel> updateBook(@PathVariable Integer id, @RequestBody Map<String, Object> request_body) {
         return bookService.updateBook(id, request_body);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponseModel> patchBook(@PathVariable Integer id, @RequestBody Map<String, Object> request_body) {
+        return bookService.patchBook(id, request_body);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponseModel> deleteBook(@PathVariable Integer id) {
+        return bookService.deleteBook(id);
     }
 }

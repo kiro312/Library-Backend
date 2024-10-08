@@ -2,7 +2,6 @@ package com.library.library.services;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,17 +16,14 @@ import com.library.library.repositories.AuthorRepository;
 public class AuthorService {
     @Autowired
     private AuthorRepository author_repository;
-    private String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-    private Pattern pattern = Pattern.compile(EMAIL_REGEX);
 
     public ResponseEntity<ApiResponseModel> getAllAuthors() {
         try {
             List<Author> authors = author_repository.findAll();
             // check if authors is empty
-            if (authors.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return ResponseEntity.ok().body(new ApiResponseModel("getting all authors successfully", true, authors));
+            String message = authors.isEmpty() ? "No Data Found" : "getting all authors successfully";
+
+            return ResponseEntity.ok().body(new ApiResponseModel(message, true, authors));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
         }
@@ -37,7 +33,7 @@ public class AuthorService {
         try {
             Author author = author_repository.findById(id).orElse(null);
             if (author == null) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Author Not Found", false, null));
             }
             return ResponseEntity.ok().body(new ApiResponseModel("getting author successfully", true, author));
         } catch (Exception e) {
@@ -70,7 +66,7 @@ public class AuthorService {
         try {
             // 0 - check if author exists
             if (!author_repository.existsById(id)) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Author Not Found", false, null));
             }
             // 1 - validate request body
             if (!validateRequestBody(request_body)) {
@@ -107,13 +103,59 @@ public class AuthorService {
             return false;
         }
         // validate email
-        // if (!pattern.matcher(request_body.get("author_email").toString()).matches()) {
-        //     return false;
+        // if (!pattern.matcher(request_body.get("author_email").toString()).matches())
+        // {
+        // return false;
         // }
         return true;
     }
 
     public Author geAuthor(Integer id) {
         return author_repository.findById(id).orElse(null);
+    }
+
+    public ResponseEntity<ApiResponseModel> patchAuthor(Integer id, Map<String, Object> request_body) {
+        try {
+            // 0 - check if author exists
+            if (!author_repository.existsById(id)) {
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Author Not Found", false, null));
+            }
+            // 1 - validate request body
+            if (!validateRequestBody(request_body)) {
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Validation Error", false, null));
+            }
+            // 2 - update author
+            Author author = author_repository.findById(id).orElse(null);
+            if (request_body.containsKey("author_name")) {
+                author.setAuthorName(request_body.get("author_name").toString());
+            }
+            if (request_body.containsKey("author_email")) {
+                author.setAuthorEmail(request_body.get("author_email").toString());
+            }
+            if (request_body.containsKey("author_bio")) {
+                author.setAuthorBio(request_body.get("author_bio").toString());
+            }
+            // 2.1 - save author
+            author_repository.save(author);
+            // 3 - return response
+            return ResponseEntity.ok().body(new ApiResponseModel("Author Updated Successfully", true, author));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
+        }
+    }
+
+    public ResponseEntity<ApiResponseModel> deleteAuthor(Integer id) {
+        try {
+            // 0 - check if author exists
+            if (!author_repository.existsById(id)) {
+                return ResponseEntity.badRequest().body(new ApiResponseModel("Author Not Found", false, null));
+            }
+            // 1 - delete author
+            author_repository.deleteById(id);
+            // 2 - return response
+            return ResponseEntity.ok().body(new ApiResponseModel("Author Deleted Successfully", true, null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseModel("Error " + e.getMessage(), false, null));
+        }
     }
 }
